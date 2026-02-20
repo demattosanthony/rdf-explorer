@@ -1,0 +1,15 @@
+{
+  "name": "rdf-explorer",
+  "version": "1.0.0",
+  "description": "CLI tool to visualize RDF Turtle files as interactive 3D graphs",
+  "bin": {
+    "rdf-explorer": "./bin/rdf-explorer.js"
+  },
+  "dependencies": {
+    "n3": "^1.22.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-force-graph-2d": "^1.29.1",
+    "react-force-graph-3d": "^1.25.0"
+  }
+}

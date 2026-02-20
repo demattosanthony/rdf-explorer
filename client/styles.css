@@ -1,0 +1,739 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+/* ── Explorer Panel ── */
+.explorer-panel {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  background: rgba(14, 14, 14, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.graph-area {
+  flex: 1;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.explorer-search {
+  padding: 12px 12px 0;
+  position: relative;
+}
+
+.explorer-filter {
+  padding: 8px 12px 0;
+}
+
+.explorer-tree {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 8px;
+}
+
+.explorer-tree-header {
+  padding: 8px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+  font-weight: 600;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.explorer-tree-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+.explorer-stats {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Tree items ── */
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #bbb;
+  transition: background 0.1s;
+  user-select: none;
+}
+
+.tree-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tree-item-selected {
+  background: rgba(0, 212, 170, 0.1);
+  color: #00d4aa;
+}
+
+.tree-item-selected:hover {
+  background: rgba(0, 212, 170, 0.15);
+}
+
+.tree-chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: transform 0.15s;
+  border-radius: 3px;
+}
+
+.tree-chevron:hover {
+  color: #aaa;
+}
+
+.tree-chevron-open {
+  transform: rotate(90deg);
+}
+
+.tree-chevron-hidden {
+  visibility: hidden;
+}
+
+.tree-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-count {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: #444;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 5px;
+  border-radius: 6px;
+}
+
+/* ── Search Input (shared) ── */
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.search-icon {
+  color: #666;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.search-input::placeholder {
+  color: #555;
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.search-clear:hover {
+  color: #e0e0e0;
+}
+
+.active-filter {
+  margin-top: 8px;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(0, 212, 170, 0.2);
+  border: 1px solid rgba(0, 212, 170, 0.4);
+  border-radius: 20px;
+  color: #00d4aa;
+  font-size: 13px;
+}
+
+.filter-clear {
+  background: none;
+  border: none;
+  color: #00d4aa;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.filter-clear:hover {
+  color: #fff;
+}
+
+/* ── Search Results Dropdown ── */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 12px;
+  right: 12px;
+  margin-top: 4px;
+  background: rgba(16, 16, 16, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+.result-empty {
+  padding: 14px;
+  color: #555;
+  font-size: 13px;
+}
+
+.result-group {
+  padding: 4px 0;
+}
+
+.result-group + .result-group {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.result-group-header {
+  padding: 8px 14px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+}
+
+.result-count {
+  text-transform: none;
+  letter-spacing: normal;
+  color: #444;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.result-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.result-icon {
+  flex-shrink: 0;
+  font-size: 10px;
+  width: 16px;
+  text-align: center;
+}
+
+.result-class .result-icon {
+  color: #00d4aa;
+}
+
+.result-node .result-icon {
+  color: #42a5f5;
+}
+
+.result-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.result-label {
+  display: block;
+  font-size: 13px;
+  color: #e0e0e0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-meta {
+  display: block;
+  font-size: 11px;
+  color: #555;
+  margin-top: 1px;
+}
+
+/* ── Stats Bar ── */
+.stats-bar {
+  padding: 8px 14px;
+}
+
+.stats-text {
+  font-size: 12px;
+  color: #666;
+}
+
+.limit-control {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.limit-label {
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+  min-width: 70px;
+}
+
+.limit-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.limit-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00d4aa;
+  cursor: pointer;
+  border: none;
+}
+
+.limit-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00d4aa;
+  cursor: pointer;
+  border: none;
+}
+
+/* ── Side Panel ── */
+.side-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 420px;
+  height: 100vh;
+  background: rgba(14, 14, 14, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.25s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.panel-header-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.panel-type-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 10px;
+  background: rgba(0, 212, 170, 0.12);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  border-radius: 12px;
+  color: #00d4aa;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.panel-close {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.panel-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 32px;
+}
+
+.panel-section {
+  margin-bottom: 22px;
+}
+
+.section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* ── Wiki: Deprecated banner ── */
+.wiki-deprecated {
+  padding: 10px 14px;
+  background: rgba(239, 83, 80, 0.1);
+  border: 1px solid rgba(239, 83, 80, 0.25);
+  border-radius: 10px;
+  margin-bottom: 18px;
+}
+
+.deprecated-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ef5350;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.deprecated-msg {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #c0a0a0;
+  line-height: 1.5;
+}
+
+/* ── Wiki: Definition block ── */
+.wiki-definition {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid rgba(0, 212, 170, 0.4);
+  border-radius: 0 10px 10px 0;
+}
+
+.wiki-definition p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #c8c8c8;
+}
+
+/* ── Wiki: Hierarchy ── */
+.wiki-hierarchy-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.hierarchy-label {
+  font-size: 12px;
+  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hierarchy-count {
+  font-size: 10px;
+  color: #555;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.hierarchy-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Wiki: Inheritance chain ── */
+.wiki-inheritance-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.inheritance-separator {
+  color: #444;
+  font-size: 14px;
+  user-select: none;
+}
+
+.wiki-link-inherited {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #999;
+  font-size: 12px;
+  padding: 3px 8px;
+}
+
+.wiki-link-inherited:hover {
+  background: rgba(66, 165, 245, 0.15);
+  border-color: rgba(66, 165, 245, 0.3);
+  color: #8dc4f8;
+}
+
+/* ── Wiki: Clickable links (navigate to another node) ── */
+.wiki-link {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(66, 165, 245, 0.1);
+  border: 1px solid rgba(66, 165, 245, 0.2);
+  border-radius: 8px;
+  color: #5ba8f0;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.wiki-link:hover {
+  background: rgba(66, 165, 245, 0.2);
+  border-color: rgba(66, 165, 245, 0.4);
+  color: #8dc4f8;
+}
+
+/* ── Wiki: Tags ── */
+.wiki-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wiki-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.wiki-tag-unit {
+  background: rgba(171, 71, 188, 0.1);
+  border-color: rgba(171, 71, 188, 0.2);
+  color: #ce93d8;
+}
+
+/* ── Wiki: Measures ── */
+.wiki-measure-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.measure-label {
+  font-size: 12px;
+  color: #666;
+  min-width: 70px;
+}
+
+.measure-value {
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+/* ── Wiki: Grouped relations ── */
+.wiki-relations-grouped {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wiki-relation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.relation-group-label {
+  font-size: 12px;
+  color: #888;
+}
+
+.relation-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Wiki: See Also ── */
+.wiki-see-also {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wiki-ext-link {
+  font-size: 12px;
+  color: #5ba8f0;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.wiki-ext-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Wiki: URI footer ── */
+.wiki-uri-section {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.uri-value {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 11px;
+  color: #555;
+  word-break: break-all;
+  line-height: 1.5;
+  user-select: all;
+}
+
+/* ── Properties (reused) ── */
+.properties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.property-item {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.property-key {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 2px;
+}
+
+.property-value {
+  font-size: 14px;
+  color: #e0e0e0;
+  margin-left: 0;
+}
+
+/* Scrollbar styling */
+.panel-body::-webkit-scrollbar,
+.class-list::-webkit-scrollbar,
+.search-results::-webkit-scrollbar,
+.explorer-tree-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-body::-webkit-scrollbar-track,
+.class-list::-webkit-scrollbar-track,
+.search-results::-webkit-scrollbar-track,
+.explorer-tree-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-body::-webkit-scrollbar-thumb,
+.class-list::-webkit-scrollbar-thumb,
+.search-results::-webkit-scrollbar-thumb,
+.explorer-tree-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}

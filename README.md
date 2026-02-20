@@ -14,17 +14,21 @@ A CLI tool that opens RDF Turtle (`.ttl`) files in an interactive browser-based 
 # Install dependencies
 bun install
 
-# Open a Turtle file
+# Open a local Turtle file
 bun bin/rdf-explorer.js myfile.ttl
+
+# Or open directly from a URL
+bun bin/rdf-explorer.js https://www.w3.org/ns/org.ttl
 ```
 
-This starts a local server and opens the viewer in your browser.
+This fetches/loads the file, starts a local server, and opens the viewer in your browser.
 
 ### Global Install
 
 ```bash
 bun link
 rdf-explorer myfile.ttl
+rdf-explorer https://www.w3.org/ns/org.ttl
 ```
 
 ### Custom Port
@@ -66,6 +70,30 @@ PORT=8080 bun bin/rdf-explorer.js myfile.ttl
 - Smart filtering: only domain "things" and semantic relationships are rendered
 - Node limit slider to control how many nodes are displayed
 - Most-connected nodes are prioritized
+
+## Examples
+
+Try it with real ontologies from the web:
+
+```bash
+# W3C Organization Ontology (82 KB)
+bun bin/rdf-explorer.js https://www.w3.org/ns/org.ttl
+
+# W3C DCAT vocabulary for data catalogs (162 KB)
+bun bin/rdf-explorer.js https://www.w3.org/ns/dcat2.ttl
+
+# W3C vCard Ontology (31 KB)
+bun bin/rdf-explorer.js https://www.w3.org/2006/vcard/ns.ttl
+
+# W3C Semantic Sensor Network Ontology (22 KB)
+bun bin/rdf-explorer.js https://www.w3.org/ns/ssn/SSN.ttl
+
+# Schema.org — full vocabulary (1 MB)
+bun bin/rdf-explorer.js https://schema.org/version/latest/schemaorg-current-https.ttl
+
+# Brick Schema — building/IoT ontology (1.7 MB)
+bun bin/rdf-explorer.js https://brickschema.org/schema/Brick.ttl
+```
 
 ## Project Structure
 

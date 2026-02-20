@@ -1,29 +1,42 @@
 #!/usr/bin/env bun
 
-import { existsSync } from "fs";
-import { resolve } from "path";
+import { existsSync, writeFileSync, mkdtempSync } from "fs";
+import { resolve, join } from "path";
+import { tmpdir } from "os";
 import { exec } from "child_process";
 
-const filePath = process.argv[2];
+const input = process.argv[2];
 
-if (!filePath) {
-  console.error("Usage: rdf-explorer <file.ttl>");
+if (!input) {
+  console.error("Usage: rdf-explorer <file.ttl | URL>");
   process.exit(1);
 }
 
-const resolved = resolve(filePath);
+const isURL = input.startsWith("http://") || input.startsWith("https://");
 
-if (!existsSync(resolved)) {
-  console.error(`File not found: ${resolved}`);
-  process.exit(1);
+let filePath;
+
+if (isURL) {
+  console.log(`Fetching ${input} …`);
+  const res = await fetch(input);
+  if (!res.ok) {
+    console.error(`Failed to fetch: ${res.status} ${res.statusText}`);
+    process.exit(1);
+  }
+  const body = await res.text();
+  const tmp = mkdtempSync(join(tmpdir(), "rdf-explorer-"));
+  filePath = join(tmp, "remote.ttl");
+  writeFileSync(filePath, body);
+  console.log(`Downloaded ${(body.length / 1024).toFixed(0)} KB`);
+} else {
+  filePath = resolve(input);
+  if (!existsSync(filePath)) {
+    console.error(`File not found: ${filePath}`);
+    process.exit(1);
+  }
 }
 
-if (!resolved.endsWith(".ttl")) {
-  console.error("File must be a .ttl (Turtle RDF) file");
-  process.exit(1);
-}
-
-process.env.RDF_FILE_PATH = resolved;
+process.env.RDF_FILE_PATH = filePath;
 
 const { startServer } = await import("../server/index.js");
 

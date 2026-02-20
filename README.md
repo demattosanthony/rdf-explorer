@@ -4,6 +4,10 @@ A CLI tool that opens RDF Turtle (`.ttl`) files in an interactive browser-based 
 
 ![Bun](https://img.shields.io/badge/runtime-Bun-f0db4f) ![React](https://img.shields.io/badge/UI-React%2019-61dafb)
 
+### Viewer
+
+<img width="1633" height="650" alt="Screenshot 2026-02-19 at 8 28 24 PM" src="https://github.com/user-attachments/assets/08444ea8-c114-48e7-b800-2bf1d2ac4838" />
+
 ## Quick Start
 
 ```bash
